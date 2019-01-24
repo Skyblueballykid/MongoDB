@@ -1,0 +1,46 @@
+1. Create a database named “city” with a document composed of the key-value pairs listed below in a collection named “inspections.”
+
+# change DB
+use city
+
+# returns all records
+db.city.find()
+
+
+# Returns the current date in Javascript
+date1 = Date()
+
+# insert
+db.city.insert({date:date1})
+
+# drop a collection
+db.inspections.drop()
+
+# Rename a collection
+db.adminCommand({renameCollection:"city.city", to "city.inspections"})
+
+2. Using the mongoimport tool, load the database “city” with documents found in the “city_inspections.json” file into the “inspections” collection. Verify your load by issuing the following queries: 
+
+# mongoimport utility
+mongoimport --db city --collection inspections ./city_inspections.json
+
+db.inspections.find({"id" : "10021-2015-ENFO"}) 
+
+db.inspections.find({"result":"Out of Business"},{"business_name":1}).limit(10)  
+
+3. a. What is the distinct list of inspection results in the current inspections collection? How many are in the list? Use JavaScript code to find the answer.  
+
+ db.runCommand({"distinct":"inspections","key":"result"})
+
+# returns the count of distinct results
+ db.inspections.distinct("result").length
+
+
+b.	What is the difference in the date data type for the business named “AUSTIN 2012” versus your business document insertion of “Acme Explosives”?  
+
+# type 2 returns all objects of string type
+ db.inspections.find( { date: {$type:2} } )
+
+b.	How many businesses have been “padlocked”? (See Value column above.)  
+
+db.inspections.find({"result":"Business Padlocked"},{"business_name":1})
