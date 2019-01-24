@@ -24,8 +24,10 @@ db.adminCommand({renameCollection:"city.city", to "city.inspections"})
 # mongoimport utility
 mongoimport --db city --collection inspections ./city_inspections.json
 
+#Query 1
 db.inspections.find({"id" : "10021-2015-ENFO"}) 
 
+#Query 2
 db.inspections.find({"result":"Out of Business"},{"business_name":1}).limit(10) 
 
 3. a. What is the distinct list of inspection results in the current inspections collection? How many are in the list? Use JavaScript code to find the answer. 
@@ -41,6 +43,6 @@ b.	What is the difference in the date data type for the business named “AUSTIN
 # type 2 returns all objects of string type
  db.inspections.find( { date: {$type:2} } )
 
-b.	How many businesses have been “padlocked”? (See Value column above.)
+c.	How many businesses have been “padlocked”? (See Value column above.)
 
 db.inspections.find({"result":"Business Padlocked"},{"business_name":1})
