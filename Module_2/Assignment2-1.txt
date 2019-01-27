@@ -13,6 +13,9 @@ date1 = Date()
 # insert
 db.city.insert({date:date1})
 
+#insert multiple document fields at once
+ db.inspections.insert({”id" : "20032-2017-ACME", "certificate_number" : "9998888", "business_name" : "ACME Explosives", "date" : "Sun Sep 16 2018 03:53:41 GMT+0000 (UTC)", "result" : "Business Padlocked", "sector" :"Explosive Retail Dealer - 999", "address" : { "number" : 1721, "street" : "Boom Road", "city" : "BRONX", "zip" : 10463 } })
+
 # drop a collection
 db.inspections.drop()
 
