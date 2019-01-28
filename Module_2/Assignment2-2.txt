@@ -1,0 +1,27 @@
+# Find by field
+db.research.find({"name" : "AdventNet"})  
+
+#More advanced find
+db.research.find({"founded_year" : 1996},{"name" : 1}).limit(10) 
+
+2. a. 	List alphabetically only the first 20 names of companies founded after the year 2010.  
+db.research.find({"founded_year": {$gt:2010}}, {name:1}).limit(20).sort({"name":1})
+
+b. List only the first 20 names of companies with offices either in California or Texas, ordered by the number of employees and sorted largest to  smallest.  
+
+#Reminder to self: 
+#When querying using dot notation, the field and nested field must be inside quotation marks.
+
+#Attempt 1
+db.research.find({"offices.state_code":'CA'}).limit(20)
+
+#attempt 2:
+db.research.find({
+    "offices.state_code": {$in: ['CA','TX']}}).limit(20).sort({"number_of_employees":-1})
+
+# Verifying sort order is correct (descending)
+db.research.find({}, {"name":1, "number_of_employees":1}).limit(20).sort({"number_of_employees":-1})
+
+#Final query
+db.research.find({
+"offices.state_code": {$in: ['CA', 'TX']}}, {"name":1, "number_of_employees":1, "offices.state_code":1}).limit(20).sort({"number_of_employees":-1}).pretty()
