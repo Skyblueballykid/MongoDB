@@ -1,0 +1,70 @@
+###Aggregation Pipeline
+
+3.	 a. Perform the following tasks using the MongoDB aggregation pipeline: 
+	Design and implement a pipeline to show the total number of employees by state for all companies that have offices in the United States.  
+
+# Attempt 1
+db.research.aggregate([
+...     {$match: { "offices.country_code" : "USA" } },
+...     {$group: { _id: "$offices.state_code", total : { $sum: "number_of_employees" } } }
+... ])
+
+#Final query
+db.research.aggregate([
+...     {$match: {"offices.country_code" : "USA" } },
+...     {$group: {_id: "$offices.state_code", total:   {$sum:"$number_of_employees" } } }
+... ])
+
+
+b. Design and implement a pipeline to show the names, total number of funding rounds, and average amount of money raised from funding rounds for companies that have funding rounds data, excluding those that do not. Show only the top 10 by average amount raised.  
+
+# Find the average amount raised:
+{$project: {
+avgAmountRaised: {
+$divide: [“$total_money_raised”,
+“$funding_rounds”]
+}
+}
+}
+
+# Sort descending
+{$sort: {avgAmountRaised:1} }
+
+# Limit to the top 10 results
+
+{ $limit: 10 }
+
+#Attempt 1
+> db.research.aggregate([
+...     { $unwind: "$funding_rounds" },
+...     { $group: {_id: "$funding_rounds", total: {"$sum":1} } },
+…     { $project: { avgAmountRaised: {$divide: [“$total_money_raised”, “$funding_rounds”] } } },
+…     { $sort: {avgAmountRaised:1} },
+...     { $limit: 10 } ] )
+
+# Attempt 2
+> db.research.aggregate([
+...     { $unwind: "$funding_rounds" },
+...     { $group: {_id: "$funding_rounds", total: {"$sum":1} } },
+...     { $project: { avgAmountRaised: {$divide: ["$total_money_raised", "$funding_rounds"]} } },
+...     { $sort: {avgAmountRaised:1} },
+...     { $limit: 10 } ] )
+
+# working
+>  db.research.aggregate([
+...           { $unwind: "$funding_rounds" },
+...           { $group: {_id: "$name", count: {$sum:1} } },
+...           { $sort: { count : -1} },
+...           { $limit: 10 } ] )
+
+#Doesn't project correctly
+>  db.research.aggregate([
+...           { $unwind: "$funding_rounds" },
+...           { $group: {_id: "$name", count: {$sum:1} } },
+...           { $project: { avgAmountRaised: {$divide: ["$total_money_raised", "$count"]} } },
+...           { $sort: { count : -1} },
+...           { $limit: 10 } ] )
+
+#Even when using the $unwind, you will still need to refer to the key with it's dot notation, so your #group segment of the pipeline should look like this:
+
+{ $group:{ _id:"$name",average_raised:{$avg:"$funding_rounds.raised_amount”}, numRounds:{$sum:1}}}
